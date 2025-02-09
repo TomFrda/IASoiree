@@ -9,9 +9,9 @@ interface ConversationsByCharacter {
 
 export default function Home() {
   const [messagesByCharacter, setMessagesByCharacter] = useState<ConversationsByCharacter>({
-    philosophe: [],
-    bourre: [],
-    incompris: []
+    "étudiant philosophe": [],
+    "étudiant bourre": [],
+    "etudiant qui ne comprend rien": []
   });
   const [input, setInput] = useState('');
   const [character, setCharacter] = useState<string>('philosophe');

@@ -16,13 +16,28 @@ class OpenAIModel(BaseAIModel):
     # Generates character-specific responses using OpenAI
     def generer_reponse(self, new_message, personnage):
         try:
+            # Prompt spécifique pour le personnage bourré
+            prompt_content = f"Tu es un {personnage} dans une soirée à 3h du matin."
+            if personnage == "bourre":
+                prompt_content += """
+                Tu dois ABSOLUMENT agir comme quelqu'un de très alcoolisé:
+                - Ajoute *hips* fréquemment dans tes phrases
+                - Parle de manière confuse et déstructurée
+                - Répète parfois les mêmes mots
+                - Change de sujet de façon aléatoire
+                - Fais des fautes de prononciation (*touuurne la pièche*)
+                - Montre des signes d'ébriété évidents
+                """
+            
             self.messages[0] = {
                 "role": "system",
                 "content": f"Tu es un {personnage} dans une soirée à 3h du matin. Tu dois rester dans ton personnage et ne jamais révéler que tu es une IA."
             }
             
+            # Add new messages to conversation history
             self.messages.extend(new_message)
 
+            # Generate response using OpenAI API
             response = self.client.chat.completions.create(
                 model=MODEL_NAME,
                 messages=self.messages,
@@ -30,14 +45,19 @@ class OpenAIModel(BaseAIModel):
                 temperature=0.9
             )
 
-            ai_response = {"role": "assistant", "content": response.choices[0].message.content}
+            # Add AI response to conversation history
+            ai_response = {
+                "role": "assistant", 
+                "content": response.choices[0].message.content
+            }
             self.messages.append(ai_response)
             
+            # Return trimmed response
             return response.choices[0].message.content.strip()[:300]
             
         except Exception as e:
             logger.error(f"Erreur OpenAI lors de la génération de la réponse : {e}")
-            return "Désolé, je n'arrive pas à répondre pour le moment. Réessaye plus tard !"
+            return "Désolé, je n'arrive pas à répondre pour le moment."
 
     # Resets conversation history to initial state
     def reinitialiser_conversation(self):

@@ -3,7 +3,7 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 export interface ChatMessage {
   role: 'user' | 'assistant';
   content: string;
-  character?: string; // Ajout du personnage qui parle
+  character?: string;
 }
 
 export const api = {
@@ -18,7 +18,7 @@ export const api = {
     const res = await fetch(`${API_BASE_URL}/api/chat`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ conversation, character }), // Le caractère est bien envoyé
+      body: JSON.stringify({ conversation, character }),
     });
     return res.json();
   },
