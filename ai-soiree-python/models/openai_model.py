@@ -13,6 +13,7 @@ class OpenAIModel(BaseAIModel):
             {"role": "system", "content": "Tu es dans une soirée étudiante à 3h du matin."}
         ]
 
+    # Generates character-specific responses using OpenAI
     def generer_reponse(self, new_message, personnage):
         try:
             self.messages[0] = {
@@ -38,12 +39,14 @@ class OpenAIModel(BaseAIModel):
             logger.error(f"Erreur OpenAI lors de la génération de la réponse : {e}")
             return "Désolé, je n'arrive pas à répondre pour le moment. Réessaye plus tard !"
 
+    # Resets conversation history to initial state
     def reinitialiser_conversation(self):
         """Reset the conversation history"""
         self.messages = [
             {"role": "system", "content": "Tu es dans une soirée étudiante à 3h du matin."}
         ]
 
+    # Generates absurd questions using OpenAI
     def generer_question_absurde(self):
         """Génère une question absurde en utilisant le modèle OpenAI"""
         try:

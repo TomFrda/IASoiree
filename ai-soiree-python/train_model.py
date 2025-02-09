@@ -13,6 +13,7 @@ class ModelTrainer:
         self.prompts = character_prompts
         self.model_name = MODEL_NAME
         
+    # Formats conversation data for model training
     def prepare_training_data(self) -> List[Dict]:
         """Prepare data for fine-tuning"""
         training_data = []
@@ -39,6 +40,7 @@ class ModelTrainer:
         
         return training_data
 
+    # Gets most recent system context
     def _get_last_system_prompt(self) -> str:
         """Get the last system prompt from conversations"""
         for conv in reversed(self.conversations):
@@ -46,6 +48,7 @@ class ModelTrainer:
                 return conv["content"]
         return "Tu es dans une soirée étudiante à 3h du matin."
 
+    # Creates character-specific response templates
     def _generate_response_template(self, character: str) -> str:
         """Generate response template based on character"""
         templates = {
@@ -55,6 +58,7 @@ class ModelTrainer:
         }
         return templates.get(character, "...")
 
+    # Exports training data to JSONL file
     def save_training_data(self, filename: str = "training_data.jsonl"):
         """Save training data in JSONL format for OpenAI fine-tuning"""
         data = self.prepare_training_data()
@@ -62,6 +66,7 @@ class ModelTrainer:
             for example in data:
                 f.write(json.dumps(example, ensure_ascii=False) + '\n')
 
+    # Tests model performance metrics
     def evaluate_model(self, test_questions: List[str]) -> Dict:
         """Evaluate model performance on test questions"""
         results = {
@@ -83,6 +88,7 @@ class ModelTrainer:
         
         return results
 
+# Handles dataset formatting for training
 class ConversationDataset(Dataset):
     def __init__(self, conversations, tokenizer):
         self.encodings = tokenizer([c["messages"] for c in conversations], truncation=True, padding=True)
@@ -93,6 +99,7 @@ class ConversationDataset(Dataset):
     def __len__(self):
         return len(self.encodings.input_ids)
 
+# Executes model training process
 def train_model(model, tokenizer, conversations):
     dataset = ConversationDataset(conversations, tokenizer)
     
@@ -113,6 +120,7 @@ def train_model(model, tokenizer, conversations):
     trainer.train()
     trainer.save_model()
 
+# Entry point for model training workflow
 def main():
     trainer = ModelTrainer()
     

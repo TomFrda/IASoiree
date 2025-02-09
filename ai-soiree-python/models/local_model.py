@@ -10,6 +10,7 @@ os.environ["HF_HUB_DISABLE_SYMLINKS_WARNING"] = "1"
 logger = logging.getLogger(__name__)
 
 class LocalAIModel(BaseAIModel):
+    # Initializes local AI model with specified parameters
     def __init__(self, model_name: str = "openai-community/gpt2", device: Optional[int] = None):
         super().__init__()
         self.model = None
@@ -55,6 +56,7 @@ class LocalAIModel(BaseAIModel):
             ("Sartre", "Existence précède l'essence")
         ]
 
+    # Formats conversation history with relevance weights
     def _format_context(self, conversation: List[Dict]) -> str:
         """Formate l'historique de conversation en gardant le contexte pertinent"""
         weighted_messages = []
@@ -63,6 +65,7 @@ class LocalAIModel(BaseAIModel):
             weighted_messages.append(f"{msg['role']} ({weight:.2f}): {msg['content']}")
         return "\n".join(weighted_messages)[:self.history_max_length]
 
+    # Generates text using unified parameters
     def _generate_text(self, prompt: str, **generation_params) -> str:
         """Méthode unifiée pour la génération de texte"""
         base_params = {
@@ -88,6 +91,7 @@ class LocalAIModel(BaseAIModel):
             logger.error(f"Erreur de génération: {e}")
             raise
 
+    # Generates contextual character-based responses
     def generer_reponse(self, conversation: List[Dict], personnage: str) -> str:
         """Génère une réponse contextuelle avec personnalité"""
         try:
@@ -138,12 +142,14 @@ class LocalAIModel(BaseAIModel):
             logger.error(f"Échec de génération de réponse: {e}")
             return self._generate_fallback_response(conversation)
 
+    # Validates response coherence with conversation
     def _validate_response_coherence(self, response: str, conversation: List[Dict]) -> bool:
         """Vérifie que la réponse est cohérente avec la conversation"""
         last_message = conversation[-1]["content"].lower()
         response_keywords = {"existence", "nature", "être", "devoir", "pensée", "réalité", "philosophie"}
         return any(keyword in response.lower() for keyword in response_keywords) or "?" in response
 
+    # Provides fallback responses when generation fails
     def _generate_fallback_response(self, conversation: List[Dict]) -> str:
         """Génère une réponse de secours en cas d'échec"""
         fallbacks = [
@@ -153,11 +159,13 @@ class LocalAIModel(BaseAIModel):
         ]
         return fallbacks[len(conversation) % len(fallbacks)]
 
+    # Cleans and formats generated text
     def _postprocess_response(self, text: str) -> str:
         """Nettoyage post-génération"""
         sentences = list(dict.fromkeys(text.split(". ")))
         return ". ".join(sentences).replace("  ", " ").strip()
 
+    # Applies philosophical style patterns to text
     def _apply_philosophical_patterns(self, text: str) -> str:
         """Amélioration stylistique par motifs philosophiques"""
         patterns = [
@@ -172,6 +180,7 @@ class LocalAIModel(BaseAIModel):
 
         return text
 
+    # Generates absurd questions in French
     def generer_question_absurde(self, absurdite_level: int = 4) -> str:
         """Génère des questions absurdes en français"""
         prompt = f"""

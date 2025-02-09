@@ -23,6 +23,7 @@ app.add_middleware(
 
 ai_model = None
 
+# Switches between local and OpenAI models
 @app.post("/api/select-model")
 async def select_model(selection: ModelSelection):
     """Select AI model type ('local' or 'openai')"""
@@ -38,12 +39,14 @@ async def select_model(selection: ModelSelection):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+# Generates a random absurd question
 @app.post("/api/question")
 async def get_absurd_question():
     if not ai_model:
         raise HTTPException(status_code=400, detail="Please select a model first")
     return {"question": ai_model.generer_question_absurde()}
 
+# Handles chat messages and returns AI responses
 @app.post("/api/chat")
 async def chat(data: dict):
     try:
@@ -58,6 +61,7 @@ async def chat(data: dict):
         logger.error(f"Chat error: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
+# Returns list of available AI characters
 @app.get("/api/characters")
 async def get_characters():
     return {"characters": CHARACTERS}
