@@ -3,6 +3,8 @@ from typing import List, Dict
 from training_data import conversations, questions_absurdes, character_prompts
 from config import MODEL_NAME
 import numpy as np
+from transformers import Trainer, TrainingArguments
+from torch.utils.data import Dataset
 
 class ModelTrainer:
     def __init__(self):
@@ -80,6 +82,36 @@ class ModelTrainer:
                 results["unique_patterns"].add(response_template[:10])
         
         return results
+
+class ConversationDataset(Dataset):
+    def __init__(self, conversations, tokenizer):
+        self.encodings = tokenizer([c["messages"] for c in conversations], truncation=True, padding=True)
+
+    def __getitem__(self, idx):
+        return {key: val[idx] for key, val in self.encodings.items()}
+
+    def __len__(self):
+        return len(self.encodings.input_ids)
+
+def train_model(model, tokenizer, conversations):
+    dataset = ConversationDataset(conversations, tokenizer)
+    
+    training_args = TrainingArguments(
+        output_dir="models/fine_tuned",
+        num_train_epochs=3,
+        per_device_train_batch_size=4,
+        save_steps=500,
+        save_total_limit=2,
+    )
+
+    trainer = Trainer(
+        model=model,
+        args=training_args,
+        train_dataset=dataset,
+    )
+
+    trainer.train()
+    trainer.save_model()
 
 def main():
     trainer = ModelTrainer()

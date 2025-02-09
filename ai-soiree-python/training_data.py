@@ -30,23 +30,18 @@ questions_absurdes = [
     "Est-ce que les nuages font exprès d'avoir des formes bizarres juste pour nous distraire?",
     "Si on met un miroir face à un autre miroir, est-ce que les reflets ont des conversations secrètes?",
     "Pourquoi les chaussettes gauches sont toujours plus philosophiques que les droites?",
-    "Est-ce que les poissons savent qu'ils sont mouillés?"
+    "Est-ce que les poissons savent qu'ils sont mouillés?",
+    "Si le temps était une pizza, quel goût aurait le futur?",
+    "Est-ce que les plantes font semblant de dormir la nuit?",
+    "Pourquoi les escaliers montent toujours vers le haut?",
+    "Si les couleurs avaient un son, est-ce que le rouge serait plus bruyant?",
+    "Est-ce que les étoiles jouent aux échecs quand on ne les regarde pas?"
 ]
 
 character_prompts = {
     "philosophe": [
         "Considérons l'essence même de cette question...",
         "Dans le grand théâtre de l'existence...",
-        "La vérité, mon ami, réside dans...",
-    ],
-    "bourre": [
-        "Mec... mec... j'ai LA réponse...",
-        "Tu vas pas me croire, mais...",
-        "Attends, je reprends une gorgée et je t'explique...",
-    ],
-    "incompris": [
-        "*soupir* Personne ne comprend vraiment que...",
-        "C'est tellement évident, pourtant...",
-        "Dans ma solitude, j'ai réalisé que...",
+        "La vérité, mon ami, réside dans..."
     ]
 }

@@ -1,35 +1,52 @@
-from ai_model import generer_question_absurde_ia, generer_reponse_avec_memoire
+from ai_model import create_ai_model
 from dialogue_generator import simuler_conversation
 from utils import afficher_menu
 from config import CHARACTERS
+from models.openai_model import OpenAIModel
+from models.local_model import LocalAIModel
+import config
 
-def conversation_interactive(personnage):
+ai_model = LocalAIModel(model_name=config.LOCAL_MODEL_NAME)
+
+def conversation_interactive(personnage, ai_model):
     """Permet à l'utilisateur de participer à une conversation interactive avec l'IA."""
-    conversation = []
-
     print(f"Vous discutez avec {personnage}. Tapez 'quitter' pour terminer la conversation.")
+    conversation = []
 
     while True:
         user_input = input("Vous : ")
         if user_input.lower() == "quitter":
             print(f"{personnage} : Bonne nuit !")
+            ai_model.reinitialiser_conversation()
             break
 
-        conversation.append({"role": "user", "content": user_input})
-
-        reponse = generer_reponse_avec_memoire(conversation, personnage)
-
-        conversation.append({"role": "assistant", "content": reponse})
-
+        message = {"role": "user", "content": user_input}
+        conversation.append(message)
+        reponse = ai_model.generer_reponse([message], personnage)
         print(f"{personnage} : {reponse}")
 
+def get_ai_model(use_local=False):
+    if use_local:
+        return LocalAIModel()
+    return OpenAIModel()
+
+def choose_ai_model():
+    print("\nChoisissez le modèle d'IA à utiliser :")
+    print("1. OpenAI (GPT)")
+    print("2. Modèle local")
+    choice = input("Votre choix (1/2) : ")
+    return choice == "2"
+
 def main():
+    use_local = choose_ai_model()
+    ai_model = get_ai_model(use_local)
+
     while True:
         afficher_menu()
         choix = input("Choisissez une option (1-5) : ")
 
         if choix == "1":
-            question = generer_question_absurde_ia()
+            question = ai_model.generer_question_absurde()
             print(f"Question absurde : {question}")
 
         elif choix == "2":
@@ -40,14 +57,14 @@ def main():
             choix_personnage = int(input("Votre choix : ")) - 1
             if 0 <= choix_personnage < len(CHARACTERS):
                 personnage = CHARACTERS[choix_personnage]
-                reponse = generer_reponse_avec_memoire([{"role": "user", "content": question}], personnage)
+                reponse = ai_model.generer_reponse([{"role": "user", "content": question}], personnage)
                 print(f"{personnage} : {reponse}")
             else:
                 print("Choix invalide.")
 
         elif choix == "3":
             nb_tours = int(input("Combien de tours de conversation voulez-vous ? "))
-            simuler_conversation(nb_tours)
+            simuler_conversation(nb_tours, ai_model)
 
         elif choix == "4":
             print("Choisissez un personnage pour discuter :")
@@ -56,7 +73,7 @@ def main():
             choix_personnage = int(input("Votre choix : ")) - 1
             if 0 <= choix_personnage < len(CHARACTERS):
                 personnage = CHARACTERS[choix_personnage]
-                conversation_interactive(personnage)
+                conversation_interactive(personnage, ai_model)
             else:
                 print("Choix invalide.")
 
